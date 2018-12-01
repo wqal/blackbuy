@@ -32,6 +32,7 @@
                 placeholder="用户名/手机/邮箱"
                 maxlength="50"
                 v-model="user_name"
+                v-focus
               >
             </div>
             <div class="input-box">
@@ -81,15 +82,25 @@ export default {
             password: this.password
           })
           .then(res => {
-              console.log(res);
-            if (res.data.status === 0) { // 登陆成功
+            console.log(res);
+            if (res.data.status === 0) {
+              // 登陆成功
               this.$message.success(res.data.message);
-              this.$store.commit('changeLogin',true);
-               this.$router.go(-1);
-            } else { //登陆失败
+              this.$store.commit("changeLogin", true);
+              this.$router.go(-1);
+            } else {
+              //登陆失败
               this.$message.error(res.data.message);
             }
           });
+      }
+    }
+  },
+  directives: {
+    focus: {
+      // 指令的定义
+      inserted: function(el) {
+        el.focus();
       }
     }
   }

@@ -113,13 +113,13 @@
                   </td>
                   <!-- 金额 -->
                   <td align='center'> {{ item.sell_price * item.buyCount }} </td>
-                  <!-- 删除按钮 -->
+                  <!-- 删除按钮 Element-ui Button组件 -->
                   <td>
                     <el-button
                       type="danger"
                       icon="el-icon-delete"
                       circle
-                      @click="deOne(item.id)"
+                      @click="delOne(item.id)"
                     ></el-button>
                   </td>
                 </tr>
@@ -189,19 +189,28 @@ export default {
     };
   },
   methods: {
-    deOne(id) {
+    delOne(id) {
+      //  MessageBox 弹框  (确认框)  Element-ui
       this.$confirm("此操作将删除该商品, 是否删除?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
+          // 如果点了确定执行这里的代码
+          this.goodList.forEach((v,index) => {
+            if (v.id == id) {
+              this.goodList.splice(index, 1);
+            }
+          });
+
           this.$message({
             type: "success",
             message: "删除成功!"
           });
         })
         .catch(() => {
+          // 如果点了取消执行这里的代码
           this.$message({
             type: "info",
             message: "已取消删除"
@@ -209,6 +218,7 @@ export default {
         });
     }
   },
+  // 计算属性
   computed: {
     // 选中的商品总个数
     selectedCount() {
@@ -250,17 +260,15 @@ export default {
       ids += ",";
     }
     ids = ids.slice(0, ids.length - 1);
-    this.$axios
-      .get(`site/comment/getshopcargoods/${ids}`)
-      .then(res => {
-        // console.log(res);
-        // 在res中循环加入 isSelected 属性  值默认为true
-        res.data.message.forEach(v => {
-          v.buyCount = this.$store.state.cartData[v.id];
-          v.isSelected = true;
-        });
-        this.goodList = res.data.message;
+    this.$axios.get(`site/comment/getshopcargoods/${ids}`).then(res => {
+      // console.log(res);
+      // 在res中循环加入 isSelected 属性  值默认为true
+      res.data.message.forEach(v => {
+        v.buyCount = this.$store.state.cartData[v.id];
+        v.isSelected = true;
       });
+      this.goodList = res.data.message;
+    });
   },
   watch: {
     goodList: {

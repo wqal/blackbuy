@@ -263,11 +263,15 @@
               </h2>
               <ul class="item-box clearfix">
                 <!--取得一个DataTable-->
+                <!-- 在线支付 单选项 -->
                 <li>
-                  <el-radio-group v-model="radio1">
-                    <el-radio :label="0">在线支付</el-radio>
-                  </el-radio-group>
-
+                  <label>
+                    <el-radio
+                      :label="6"
+                      v-model="ruleForm.payment_id"
+                    >在线支付</el-radio>
+                    &nbsp;<em>手续费：0.00元</em>
+                  </label>
                 </li>
               </ul>
               <h2 class="slide-tit">
@@ -276,11 +280,25 @@
               <ul class="item-box clearfix">
                 <!--取得一个DataTable-->
                 <li>
-                  <el-radio-group v-model="radio2">
-                    <el-radio :label="3">顺丰快递 <em>费用：20.00元</em> </el-radio>
-                    <el-radio :label="6">圆通快递 <em>费用：20.00元</em> </el-radio>
-                    <el-radio :label="9">百世快递 <em>费用：20.00元</em> </el-radio>
-                  </el-radio-group>
+                  <label>
+                    <!-- <el-radio-group v-model="radio"> -->
+                    <el-radio
+                      v-model="ruleForm.express_id"
+                      @change="ruleForm.expressMoment=24"
+                      label="1"
+                    >顺丰快递 <em>&nbsp; 费用：20.00元</em> </el-radio>
+                    <el-radio
+                      v-model="ruleForm.express_id"
+                      @change="ruleForm.expressMoment=8"
+                      label="2"
+                    >圆通快递 <em>&nbsp; 费用：8.00元</em> </el-radio>
+                    <el-radio
+                      v-model="ruleForm.express_id"
+                      @change="ruleForm.expressMoment=12"
+                      label="3"
+                    >百世快递 <em>&nbsp; 费用：12.00元</em> </el-radio>
+                    <!-- </el-radio-group> -->
+                  </label>
                   <!-- <label>
                     <input
                       name="express_id"
@@ -357,10 +375,10 @@
                         ￥{{item.sell_price}}
                       </span>
                     </td>
-                    <td align="center">{{item.buyCount}}</td>
+                    <td align="center">{{item.buycount}}</td>
                     <td>
                       <span class="red">
-                        ￥{{item.sell_price * item.buyCount}}
+                        ￥{{item.sell_price * item.buycount}}
                       </span>
                     </td>
                   </tr>
@@ -379,6 +397,7 @@
                         name="message"
                         class="input"
                         style="height:35px;"
+                        v-model="ruleForm.message"
                       ></textarea>
                     </dd>
                   </dl>
@@ -386,25 +405,25 @@
                 <div class="right-box">
                   <p>
                     商品
-                    <label class="price">1</label> 件&nbsp;&nbsp;&nbsp;&nbsp; 商品金额：￥
+                    <label class="price">{{totalCount}}</label> 件&nbsp;&nbsp;&nbsp;&nbsp; 商品金额：￥
                     <label
                       id="goodsAmount"
                       class="price"
-                    >2299.00</label> 元&nbsp;&nbsp;&nbsp;&nbsp;
+                    >{{totalPrice}}</label> 元&nbsp;&nbsp;&nbsp;&nbsp;
                   </p>
                   <p>
                     运费：￥
                     <label
                       id="expressFee"
                       class="price"
-                    >0.00</label> 元
+                    >{{ruleForm.expressMoment}}</label> 元
                   </p>
                   <p class="txt-box">
                     应付总金额：￥
                     <label
                       id="totalAmount"
                       class="price"
-                    >2299.00</label>
+                    >{{totalPrice + ruleForm.expressMoment}}</label>
                   </p>
                   <p class="btn-box">
                     <a
@@ -414,6 +433,7 @@
                     <a
                       id="btnSubmit"
                       class="btn submit"
+                      @click="submit('ruleForm')"
                     >确认提交</a>
                   </p>
                 </div>
@@ -454,7 +474,7 @@ export default {
       if (!value) {
         return callback(new Error("请输入邮编"));
       } else {
-        var reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+        var reg = /^[1-9]\d{5}(?!\d)$/;
         if (reg.test(value) == true) {
           callback();
         } else {
@@ -478,19 +498,32 @@ export default {
       }
     };
     return {
-      goodsList: [],
       ids: "",
+      // 商品列表
+      goodsList: [],
+      // 商品总价（不含运费）
+      totalPrice: 0,
+      // 商品数量
+      totalCount: 0,
       ruleForm: {
-        accept_name: "",
-        address: "",
-        mobile: "",
-        post_code: "",
-        email: "",
+        accept_name: "杰克",
+        address: "xx省xx市xx区xx路xx楼",
+        mobile: "13800138000",
+        post_code: "440306",
+        email: "664652651@qq.com",
         area: {
           province: { code: "440000", value: "广东省" },
-          city: { code: "440000", value: "深圳市" },
-          area: { code: "440000", value: "宝安区" }
-        }
+          city: { code: "440300", value: "深圳市" },
+          area: { code: "440306", value: "宝安区" }
+        },
+        // 支付方式6:在线支付
+        payment_id: 6,
+        // 运送方式
+        express_id: "1",
+        // 快递费
+        expressMoment: 24,
+        // 备注
+        message: "请尽快发货额"
       },
       rules: {
         // 表单验证规则
@@ -514,15 +547,46 @@ export default {
         mobile: [{ validator: mobile, trigger: "change" }],
         post_code: [{ validator: post_code, trigger: "change" }],
         email: [{ validator: email, trigger: "change" }]
-      },
-      radio1: 0,
-      radio2: 0
+      }
     };
   },
   methods: {
     selectedArea(val) {
-      console.log(val);
+      // console.log(val);
       this.ruleForm.area = val;
+    },
+    // 提交订单
+    submit(formName) {
+      // 提交订单之前对信息进行最后一次验证  element-ui中 Form表单验证
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.ruleForm.goodsids = this.ids;
+          this.ruleForm.goodsAmount = this.totalPrice;
+          let obj = {};
+          this.goodsList.forEach(v => {
+            obj[v.id] = v.buycount;
+          });
+          this.ruleForm.cargoodsobj = obj;
+          // console.log(this.ruleForm.cargoodsobj);
+          this.$axios
+            .post("site/validate/order/setorder", this.ruleForm)
+            .then(res => {
+              // console.log(res); // 根据发送数据返回订单信息（订单id）
+              this.$Message.success("订单提交成功!");
+              this.$router.push("/payMoney/" + res.data.message.orderid);
+
+              // 删除Vuex中这次购买的商品数据
+              console.log(this.$store);
+              // 使用commit该改变store中的数据
+              this.goodsList.forEach(v => {
+                this.$store.commit("delGoodById", v.id);
+              });
+            });
+        } else {
+          this.$Message.warning("数据不完整");
+          return false;
+        }
+      });
     }
   },
   // creater(){ }
@@ -540,17 +604,19 @@ export default {
   created() {
     // console.log(this.$store);
     this.ids = this.$route.params.ids;
+    // 请求数据渲染订单页
     this.$axios
       .get(`site/validate/order/getgoodslist/${this.ids}`)
       .then(res => {
         // console.log(res);
         this.goodsList = res.data.message;
+        // console.log(this.goodsList);
         res.data.message.forEach(v => {
-          v.buyCount = this.$store.state.cartData[v.id];
+          v.buycount = this.$store.state.cartData[v.id];
           // 总商品数
-          this.totalCount += v.buyCount;
-          // 累加总金额
-          this.totalPrice += v.sell_price * v.buyCount;
+          this.totalCount += v.buycount;
+          // 累加总金额 应付金额（包含运费）
+          this.totalPrice += v.buycount * v.sell_price;
         });
       });
   },

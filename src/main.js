@@ -52,6 +52,15 @@ import shopCart from "./components/03.shopCart.vue";
 import order from "./components/04.order.vue";
 // 登录
 import login from "./components/05.login.vue";
+// 付钱
+import payMoney from "./components/06.payMoney.vue";
+// 付钱成功页面
+import paySuccess from "./components/07.paySuccess.vue";
+// 会员中心
+import vipCenter from "./components/08.vipCenter.vue";
+import orderList from "./components/09.orderList.vue";
+import orderDetail from "./components/10.orderDetail.vue";
+import vipIndex from "./components/11.vipIndex.vue";
 
 let routes = [
   {
@@ -77,13 +86,57 @@ let routes = [
   },
   {
     path: "/login",
-    component: login
+    component: login,
+    meta: {
+      checkLogin: true
+    }
+  },
+  {
+    path: "/payMoney/:orderid",
+    component: payMoney,
+    // 路由元信息
+    meta: {
+      checkLogin: true
+    }
+  },
+  {
+    path: "/paySuccess",
+    component: paySuccess,
+    meta: {
+      checkLogin: true
+    }
+  },
+  {
+    path: "/vipCenter",
+    component: vipCenter,
+    meta: {
+      checkLogin: true
+    },
+    children: [
+      {
+        path: "",
+        redirect: "/vipIndex"
+      },
+      {
+        path: "/vipIndex",
+        component: vipIndex
+      },
+      {
+        path: "orderList",
+        component: orderList
+      },
+      {
+        path: "orderDetail/:orderID",
+        component: orderDetail
+      }
+    ]
   }
 ];
 
 // 实例化路由对象
 let router = new VueRouter({
-  routes
+  mode: 'history',
+  routes,
 });
 
 // 引入Vuex 核心插件
@@ -110,9 +163,11 @@ const store = new Vuex.Store({
   // 相当于Vuex中的方法 改变store中的数据
   mutations: {
     addToCart(state, obj) {
-      // console.log(obj); // goodID: "91" ,goodNum: 1
+      console.log(state);
+      // console.log(obj); // goodID: "91", goodNum: 1
       // 如果商品存在
       if (state.cartData[obj.goodID] != undefined) {
+        // 下面代码的简写
         state.cartData[obj.goodID] += obj.goodNum;
         // let oldNum = state.cartData[obj.goodID];
         // oldNum += obj.goodNum;
@@ -121,11 +176,14 @@ const store = new Vuex.Store({
         //商品不存在
         Vue.set(state.cartData, obj.goodID, obj.goodNum);
       }
-      console.log(state);
+      console.log(state.cartData);
     },
     updateCart(state, obj) {
       // console.log(obj);
       state.cartData = obj;
+    },
+    delGoodById(state, id) {
+      Vue.delete(state.cartData, id);
     },
     changeLogin(state, isLogin) {
       state.isLogin = isLogin;
@@ -142,8 +200,8 @@ window.onbeforeunload = function() {
 router.beforeEach((to, from, next) => {
   // console.log(to);
   // 调用接口判断是否登录
-
   if (to.path.indexOf("/order") != -1) {
+    // if (to.meta.checkLogin == true) {
     // 在去订单页面之前先判断是否登录？
     axios.get("site/account/islogin").then(res => {
       // console.log(res);
@@ -160,20 +218,26 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+router.afterEach((to, from) => {
+  window.scrollTo(0, 0);
+});
+
 new Vue({
   render: h => h(App),
   router,
   // 把store传递给 Vue实例 才可以在子组件中使用$store
   store,
+  
   // 此代码段避免页面刷新登录状态丢失
   // 调用接口判断是否登录
   created() {
     axios.get("site/account/islogin").then(res => {
-      // console.log(res);
+      console.log(res);
       if (res.data.code == "nologin") {
         Vue.prototype.$Message.warning("请先登录");
         router.push("/login");
       } else {
+        store.state.isLogin = true;
         // next();
       }
     });

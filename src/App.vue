@@ -19,7 +19,10 @@
             id="menu"
             class="right-box"
           >
-            <span v-show="$store.state.isLogin==false" style="display: none;">
+            <span
+              v-show="$store.state.isLogin==false"
+              style="display: none;"
+            >
               <router-link to="/login">登录</router-link>
               <strong>|</strong>
               <a
@@ -29,9 +32,8 @@
               <strong>|</strong>
             </span>
             <span v-show="$store.state.isLogin==true">
-              <a
-                href="" 
-              >会员中心</a>
+              <!-- <a href="">会员中心</a> -->
+              <router-link to="/vipCenter">会员中心</router-link>
               <strong>|</strong>
               <a @click="logout">退出</a>
               <strong>|</strong>
@@ -180,22 +182,27 @@
 <script>
 export default {
   name: "app",
-  data:function(){
-    return{
-     
-    }
+  data: function() {
+    return {};
   },
-  methods:{
-    logout(){
-      this.$axios.get('site/account/logout').then(res=>{
+  methods: {
+    logout() {
+      this.$axios.get("site/account/logout").then(res => {
         console.log(res);
         // 退出成功
         this.$Message.success(res.data.message);
-        this.$router.push('/index');
-        this.$store.commit('changeLogin',false)
-      })
-    }
-  }
+        this.$router.push("/index");
+        this.$store.commit("changeLogin", false);
+      });
+    },
+    // 页面置顶
+    // toTop() {
+    //   window.scrollTo(0, 0);
+    // }
+  },
+  // created() {
+  //   this.toTop();
+  // }
 };
 </script>
 

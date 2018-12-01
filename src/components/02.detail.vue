@@ -383,7 +383,6 @@ export default {
     // console.log(this.$route.params);
     this.initData();
   },
-
   watch: {
     // 如果 `$route` 发生改变，这个函数就会运行
     // $route 为要侦听的数据
