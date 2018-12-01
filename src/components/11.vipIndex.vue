@@ -20,11 +20,11 @@
           >
         </div>
         <div class="list-box">
-          <h3>欢迎您~ ivanyb</h3>
+          <h3>欢迎您~ 丿流水</h3>
           <ul>
-            <li>组别：注册会员</li>
-            <li>手机：13987654321</li>
-            <li>Email:ivanyb1@qq.com</li>
+            <li>组别：铂金会员</li>
+            <li>手机：16866668888</li>
+            <li>Email:664652651@qq.com</li>
           </ul>
         </div>
       </div>
@@ -50,9 +50,7 @@
 export default {
   name: "vipIndex",
   data: function() {
-    return {
-      
-    };
+    return {};
   }
 };
 </script>
