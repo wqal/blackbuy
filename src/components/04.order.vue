@@ -576,7 +576,7 @@ export default {
               this.$router.push("/payMoney/" + res.data.message.orderid);
 
               // 删除Vuex中这次购买的商品数据
-              console.log(this.$store);
+              // console.log(this.$store);
               // 使用commit该改变store中的数据
               this.goodsList.forEach(v => {
                 this.$store.commit("delGoodById", v.id);
@@ -590,17 +590,17 @@ export default {
     }
   },
   // creater(){ }
-  beforeCreate() {
-    // this.$axios.get('http://111.230.232.110:8899/site/account/islogin').then(res => {
-    //     // console.log(res);
-    //     if(res.data.code == "nologin"){
-    //         this.$Message.warning('请先登录');
-    //         setTimeout(()=>{
-    //             this.$router.push('/index');
-    //         },1000)
-    //     }
-    // })
-  },
+  // beforeCreate() {
+  // this.$axios.get('http://111.230.232.110:8899/site/account/islogin').then(res => {
+  //     // console.log(res);
+  //     if(res.data.code == "nologin"){
+  //         this.$Message.warning('请先登录');
+  //         setTimeout(()=>{
+  //             this.$router.push('/index');
+  //         },1000)
+  //     }
+  // })
+  // },
   created() {
     // console.log(this.$store);
     this.ids = this.$route.params.ids;
