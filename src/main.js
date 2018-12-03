@@ -11,7 +11,7 @@ import "./assets/site/css/style.css";
 import router from "./lib/router";
 import store from "./lib/store";
 import "./lib/filters";
-import "./lib/plugin";
+import "./lib/plugins";
 
 // 浏览器关闭保存数据
 window.onbeforeunload = function() {
@@ -27,7 +27,7 @@ new Vue({
   // 调用接口判断是否登录
   created() {
     this.$axios.get("site/account/islogin").then(res => {
-      console.log(res);
+      // console.log(res);
       if (res.data.code == "nologin") {
         Vue.prototype.$Message.warning("请先登录");
         router.push("/login");

@@ -20,8 +20,7 @@ import {
   Message,
   Form,
   FormItem,
-  Radio,
-  RadioGroup
+  Radio
 } from "element-ui";
 
 Vue.use(Button);
@@ -37,7 +36,7 @@ Vue.use(Radio);
 
 Vue.prototype.$notify = Notification;
 Vue.prototype.$confirm = MessageBox.confirm;
-// Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$msgbox = MessageBox;
 Vue.prototype.$message = Message;
 
 // 导入 iView 框架
@@ -47,12 +46,12 @@ import "iview/dist/styles/iview.css";
 // Vue.use(iView);
 
 // iView 按需加载
-import { Affix, Page, BackTop } from "iview";
+import { Affix, page, BackTop } from "iview";
 Vue.component("Affix", Affix);
 Vue.component("Page", Page);
 Vue.component("BackTop", BackTop);
 
-// 引入放大镜组件 GitHub中的
+// 引入放大镜组件 GitHub中
 import ProductZoomer from "vue-product-zoomer";
 Vue.use(ProductZoomer);
 
